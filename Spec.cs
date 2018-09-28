@@ -7,85 +7,143 @@ using System.Collections.Generic;
 using System;
 using Xunit.Abstractions;
 using System.Linq;
+using KmaOoad18.Assignments.Week4.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace KmaOoad18.Assignments.Week4
 {
-    public class Spec
+    public class Spec : IDisposable
     {
-        [Scenario]
-        public void CanLaunchLoyalty(string name, string phone, LoyaltyClient client)
+        [Fact]
+        public void CanLaunchLoyalty()
         {
-            "Given some customer name"
-            .x(() => name = "James Jameson");
+            // Given some customer name
+            var name = "James Jameson";
 
-            "And customer phone"
-            .x(() => phone = "088 913-49-84");
+            // And customer phone
+            var phone = "088 913-49-84";
 
-            "And loyalty client"
-            .x(() => client = new LoyaltyClient());
+            // And loyalty client
+            var client = new LoyaltyClient();
 
             var loyaltyCard = string.Empty;
 
-            "When I launch customer's loyalty program"
-            .x(() => loyaltyCard = client.LaunchLoyalty(name, phone));
+            // When I launch customer's loyalty program
+            loyaltyCard = client.LaunchLoyalty(name, phone);
 
-            "Then I expect that customer's balance is zero"
-            .x(() => client.LoyaltyBalance(loyaltyCard).Should().Be(0));
+            // Then I expect that customer's balance is zero
+            client.LoyaltyBalance(loyaltyCard).Should().Be(0);
         }
 
 
-        [Scenario]
+        [Fact]
         public void CanProcessPurchase()
         {
             var (products, purchased) = SeedProducts();
 
-            LoyaltyClient client = null;
-            string loyaltyCard = string.Empty;
+            // Given loyalty client
+            var client = new LoyaltyClient();
 
-            "Given loyalty client"
-            .x(() => client = new LoyaltyClient());
+            // And loyalty card
+            var loyaltyCard = client.LaunchLoyalty("Rick Richardson", "074 454-89-90");
 
-            "And loyalty card"
-            .x(() => loyaltyCard = client.LaunchLoyalty("Rick Richardson", "074 454-89-90"));
+            // And some products
+            products.ForEach(p => client.AddProduct(p.Sku, p.Name, p.Price));
 
-            "And some products"
-            .x(() => products.ForEach(p => client.AddProduct(p.Sku, p.Name, p.Price)));
+            // When I process customer's purchase
+            client.ProcessPurchase(purchased.Select(p => (p.Sku, p.Qty)).ToList(), loyaltyCard);
 
-            decimal total1 = 0m;
-            decimal total2 = 0m;
+            // And get balance
+            var balance1 = client.LoyaltyBalance(loyaltyCard);
 
-            int balance1 = 0;
-            int balance2 = 0;
+            // And then process same purchase
+            client.ProcessPurchase(purchased.Select(p => (p.Sku, p.Qty)).ToList(), loyaltyCard);
 
-            "When I process customer's purchase"
-            .x(() => total1 = client.ProcessPurchase(purchased.Select(p => (p.Sku, p.Qty)).ToList()));
+            // And get balance again
+            var balance2 = client.LoyaltyBalance(loyaltyCard);
 
-            "And get balance"
-            .x(() => balance1 = client.LoyaltyBalance(loyaltyCard));
-
-            "And then process same purchase with doubled qty"
-            .x(() => total2 = client.ProcessPurchase(purchased.Select(p => (p.Sku, p.Qty * 2)).ToList()));
-
-            "And get balance again"
-            .x(() => balance2 = client.LoyaltyBalance(loyaltyCard));
-
-            "Then I expect total to double"
-            .x(() => total2.Should().Be(total1 * 2));
-
-            "And balance to triple"
-            .x(() => balance2.Should().Be(balance1 * 3));
+            // Then I expect balance to double
+            balance2.Should().BeGreaterThan(0);
+            balance2.Should().Be(balance1 * 2);
         }
+
+        [Fact]
+        public void CanApplySpecialOfferings()
+        {
+            var (products, purchased) = SeedProducts();
+
+
+            // Given loyalty client
+            var client = new LoyaltyClient();
+
+            // And loyalty card
+            var loyaltyCard = client.LaunchLoyalty("Rick Richardson", "074 454-89-90");
+
+            // And some products
+            products.ForEach(p => client.AddProduct(p.Sku, p.Name, p.Price));
+
+            // When I process customer's purchase
+            client.ProcessPurchase(purchased.Select(p => (p.Sku, p.Qty)).ToList(), loyaltyCard);
+
+            // And get balance
+            var balance1 = client.LoyaltyBalance(loyaltyCard);
+
+            // And add X3 special offering
+            purchased.ForEach(p => client.AddSpecialOffering(p.Sku, Promotion.MultiplyPoints, 3));
+
+            // And then process same purchase again
+            client.ProcessPurchase(purchased.Select(p => (p.Sku, p.Qty)).ToList(), loyaltyCard);
+
+            // And get balance again
+            var balance2 = client.LoyaltyBalance(loyaltyCard);
+
+            // Then I expect balance to quadruple!!!
+            balance2.Should().BeGreaterThan(0);
+            balance2.Should().Be(balance1 * 4);
+        }
+
+        [Fact]
+        public void CanDeductLoyaltyPoints()
+        {
+            var (products, purchased) = SeedProducts();
+
+            // Given loyalty client
+            var client = new LoyaltyClient();
+
+            // And loyalty card
+            var loyaltyCard = client.LaunchLoyalty("Rick Richardson", "074 454-89-90");
+
+            // And some products
+            products.ForEach(p => client.AddProduct(p.Sku, p.Name, p.Price));
+
+            // When I process customer's purchase
+            client.ProcessPurchase(purchased.Select(p => (p.Sku, p.Qty)).ToList(), loyaltyCard);
+
+            // And get balance
+            var balance1 = client.LoyaltyBalance(loyaltyCard);
+
+            // And then process same purchase again with loyalty deduction=ON
+            client.ProcessPurchase(purchased.Select(p => (p.Sku, p.Qty)).ToList(), loyaltyCard, true);
+
+            // And get balance again
+            var balance2 = client.LoyaltyBalance(loyaltyCard);
+
+            // Then I expect balance to be 90% of previous one
+            balance2.Should().BeGreaterThan(0);
+            balance2.Should().Be(Convert.ToInt32(Math.Ceiling(balance1 * 0.9m)));
+        }
+
 
         private (List<Product>, List<Purchase>) SeedProducts()
         {
             var seed = DateTime.Now.Second + 3;
-            var factor = seed % 10;
+            var factor = (seed % 17) + 4;
             var productSeed = seed * factor;
 
             var prices = new List<int>();
             for (int i = 0; i < factor; i++)
             {
-                prices.Add(productSeed);
+                prices.Add(productSeed + i);
             }
 
             var products = prices.Select(price => new Product { Name = $"sku{price}", Sku = $"sku{price}", Price = price * 1.0m }).ToList();
@@ -95,10 +153,20 @@ namespace KmaOoad18.Assignments.Week4
             return (products, purchased);
         }
 
+        public void Dispose()
+        {
+            using (var db = new LoyaltyContext())
+            {
+                db.Database.ExecuteSqlCommand("DELETE FROM [SpecialOfferings]");
+                db.Database.ExecuteSqlCommand("DELETE FROM [Products]");
+                db.Database.ExecuteSqlCommand("DELETE FROM [Customers]");
+            }
+        }
+
         private struct Purchase
         {
             public string Sku;
-            public double Qty;
+            public decimal Qty;
         }
 
         private struct Product

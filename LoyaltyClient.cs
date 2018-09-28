@@ -12,14 +12,14 @@ namespace KmaOoad18.Assignments.Week4
         public int LoyaltyBalance(string loyaltyId) => -500; // Replace with implementation
 
 
-        // 1. Calculates total amount for given list of products and quantities
-        //    a. If useLoyaltyPoints=true, up to 50% of total amount can be covered with loyalty points
-        // 2. Calculates bonus for purchase and adds to customer's account
-        //    a. Normal loyalty bonus for product is 10% of total amount (price * qty), rounded up 
-        // Returns total amount of purchase
-        public decimal ProcessPurchase(List<(string sku, double qty)> order, string loyaltyId = null, bool useLoyaltyPoints = false)
-        => -2000M; // Replace with implementation
-
+        // Calculates bonus for purchase and adds to customer's account
+        //    a. Normal loyalty bonus for product is 10% of paid total amount (price * qty), rounded up 
+        //    b. If useLoyaltyPoints=true, up to 50% of total amount can be covered with loyalty points; //       in this case loyalty bonus is calculated only for actually paid amount (with bonus deducted)
+        
+        public void ProcessPurchase(List<(string sku, decimal qty)> order, string loyaltyId, bool useLoyaltyPoints = false)
+        {
+            // Add implementation
+        }
 
 
         // Part II: Back-office (admin operations)
