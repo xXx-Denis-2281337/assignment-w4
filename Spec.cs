@@ -12,29 +12,70 @@ namespace KmaOoad18.Assignments.Week4
     public class Spec : IDisposable
     {
         [Fact]
-        public void CanLaunchLoyalty()
+        public void BasicScenario()
         {
-            // Given some customer name
-            var name = "James Jameson";
-
-            // And customer phone
-            var phone = "088 913-49-84";
-
-            // And loyalty client
+            // Given loyalty client
             var client = new LoyaltyClient();
 
+            // And some customer
+            var name = "James Jameson";
+            var phone = "088 913-49-84";
             var loyaltyCard = string.Empty;
+
+            // And some product 
+            var sku = $"sku{DateTime.Now.Ticks}";
+            var price = 100m;
+            client.AddProduct(sku, sku, price);
+
 
             // When I launch customer's loyalty program
             loyaltyCard = client.LaunchLoyalty(name, phone);
 
-            // Then I expect that customer's balance is zero
+            // Then I expect that customer's balance to be zero
             client.LoyaltyBalance(loyaltyCard).Should().Be(0);
+
+            // When I purchase some product with qty=1 and price=100
+            var purchase = new List<(string, int)> { (sku, 1) };
+
+            client.ProcessPurchase(purchase, loyaltyCard);
+
+            // Then I expect balance to be 10 (0 + 100 * 1 * 0.1)
+            var balance1 = client.LoyaltyBalance(loyaltyCard);
+            balance1.Should().Be(10);
+
+            // When I add special offering to make every bonus X10
+            client.AddSpecialOffering(sku, Promotion.MultiplyPoints, 10);
+
+            // And make same purchase
+            client.ProcessPurchase(purchase, loyaltyCard);
+
+            // Then I expect balance to be 110 (10 + 100 * 1 * 0.1 * 10)
+            var balance2 = client.LoyaltyBalance(loyaltyCard);
+            balance2.Should().Be(110);
+
+            // When I remove special offering
+            client.RemoveSpecialOffering(sku);
+
+            // And make same purchase
+            client.ProcessPurchase(purchase, loyaltyCard);
+
+            // Then I expect balance to be 120 (110 + 100 * 1 * 0.1)
+            var balance3 = client.LoyaltyBalance(loyaltyCard);
+            balance3.Should().Be(120);
+
+
+            // When I make same purchase and use bonus
+            client.ProcessPurchase(purchase, loyaltyCard, useLoyaltyPoints: true);
+
+            // Then I expect balance to be 75, because 50 is spent as discount for half amount, customer pays 100-50=50 and receives 5 points for bonus
+            var balance4 = client.LoyaltyBalance(loyaltyCard);
+            balance4.Should().Be(75);
         }
 
 
+        #region Extended Tests
         [Fact]
-        public void CanProcessPurchase()
+        public void CanProcessPurchaseExtended()
         {
             var (products, purchased) = SeedProducts();
 
@@ -65,7 +106,7 @@ namespace KmaOoad18.Assignments.Week4
         }
 
         [Fact]
-        public void CanApplySpecialOfferings()
+        public void CanApplySpecialOfferingsExtended()
         {
             var (products, purchased) = SeedProducts();
 
@@ -99,8 +140,8 @@ namespace KmaOoad18.Assignments.Week4
             balance2.Should().Be(balance1 * 4);
         }
 
-                [Fact]
-        public void CanRemoveSpecialOfferings()
+        [Fact]
+        public void CanRemoveSpecialOfferingsExtended()
         {
             var (products, purchased) = SeedProducts();
 
@@ -125,7 +166,7 @@ namespace KmaOoad18.Assignments.Week4
 
             // And then process same purchase again
             client.ProcessPurchase(purchased.Select(p => (p.Sku, p.Qty)).ToList(), loyaltyCard);
-            
+
             // And then remove special offering
             purchased.ForEach(p => client.RemoveSpecialOffering(p.Sku));
 
@@ -142,7 +183,7 @@ namespace KmaOoad18.Assignments.Week4
         }
 
         [Fact]
-        public void CanDeductLoyaltyPoints()
+        public void CanDeductLoyaltyPointsExtended()
         {
             var (products, purchased) = SeedProducts();
 
@@ -214,5 +255,7 @@ namespace KmaOoad18.Assignments.Week4
             public string Sku;
             public decimal Price;
         }
+
+        #endregion
     }
 }
