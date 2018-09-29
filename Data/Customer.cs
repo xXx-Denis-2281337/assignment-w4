@@ -7,6 +7,6 @@ namespace KmaOoad18.Assignments.Week4.Data
         public string Phone { get; set; }
 
         public string LoyaltyCardId { get; set; }
-        public int LoyaltyBalance { get; set; }
+        public decimal LoyaltyBalance { get; set; }
     }
 }

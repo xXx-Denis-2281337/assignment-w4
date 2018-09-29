@@ -1,11 +1,8 @@
-using Xbehave;
 using FluentAssertions;
 using Xunit;
 using FsCheck;
-using FsCheck.Xunit;
 using System.Collections.Generic;
 using System;
-using Xunit.Abstractions;
 using System.Linq;
 using KmaOoad18.Assignments.Week4.Data;
 using Microsoft.EntityFrameworkCore;
@@ -102,6 +99,48 @@ namespace KmaOoad18.Assignments.Week4
             balance2.Should().Be(balance1 * 4);
         }
 
+                [Fact]
+        public void CanRemoveSpecialOfferings()
+        {
+            var (products, purchased) = SeedProducts();
+
+
+            // Given loyalty client
+            var client = new LoyaltyClient();
+
+            // And loyalty card
+            var loyaltyCard = client.LaunchLoyalty("Rick Richardson", "074 454-89-90");
+
+            // And some products
+            products.ForEach(p => client.AddProduct(p.Sku, p.Name, p.Price));
+
+            // When I process customer's purchase
+            client.ProcessPurchase(purchased.Select(p => (p.Sku, p.Qty)).ToList(), loyaltyCard);
+
+            // And get balance
+            var balance1 = client.LoyaltyBalance(loyaltyCard);
+
+            // And add X3 special offering
+            purchased.ForEach(p => client.AddSpecialOffering(p.Sku, Promotion.MultiplyPoints, 3));
+
+            // And then process same purchase again
+            client.ProcessPurchase(purchased.Select(p => (p.Sku, p.Qty)).ToList(), loyaltyCard);
+            
+            // And then remove special offering
+            purchased.ForEach(p => client.RemoveSpecialOffering(p.Sku));
+
+            // And process same purchase once more
+            client.ProcessPurchase(purchased.Select(p => (p.Sku, p.Qty)).ToList(), loyaltyCard);
+
+
+            // And get balance again
+            var balance2 = client.LoyaltyBalance(loyaltyCard);
+
+            // Then I expect balance grows 5 times
+            balance2.Should().BeGreaterThan(0);
+            balance2.Should().Be(balance1 * 5);
+        }
+
         [Fact]
         public void CanDeductLoyaltyPoints()
         {
@@ -130,7 +169,7 @@ namespace KmaOoad18.Assignments.Week4
 
             // Then I expect balance to be 90% of previous one
             balance2.Should().BeGreaterThan(0);
-            balance2.Should().Be(Convert.ToInt32(Math.Ceiling(balance1 * 0.9m)));
+            balance2.Should().Be(balance1 * 0.9m);
         }
 
 
@@ -166,7 +205,7 @@ namespace KmaOoad18.Assignments.Week4
         private struct Purchase
         {
             public string Sku;
-            public decimal Qty;
+            public int Qty;
         }
 
         private struct Product
