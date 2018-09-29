@@ -2,6 +2,8 @@
 
 Task goal is to implement simple API for managing loyalty bonus program for some store. Stubs for client methods are provided in `LoyaltyClient.cs`.
 
+**Deadline** for this task is extended for one more day &mdash; until Oct 8th instead of Oct 7th &mdash; due to publish delay :)
+
 ## Working with database
 This task implies usage of the database, in this case &mdash; SQLite. SQLite is a one-file-database: everything is stored in a single file (which is a DB itself) and no installations are needed. Starter project comes with two databases for you: `loyalty.db` &mdash; main database, for normal work of application, and `test.db` &mdash; database used by automatic tests.
 
