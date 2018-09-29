@@ -1,3 +1,11 @@
-# assignment-w4
+# Loyalty Automation
 
-[EF Core with SQLite](https://docs.microsoft.com/en-us/ef/core/get-started/netcore/new-db-sqlite)
+Task goal is to implement simple API for managing loyalty bonus program for some store. Stubs for client methods are provided in LoyaltyClient.cs.
+
+This task implies usage of the database, in this case - SQLite. SQLite is a one-file-database: everything is stored in a single file (which is a DB itself) and no installations are needed. Starter project comes with two databases for you: loyalty.db - main database, for normal work of application, and test.db - database used by automatic tests.
+
+Database operations in .NET Core are typically implemented with special framework - Entity Framework Core. EF Core is an ORM framework - special type of software capable of translating native DB operations (SQL) into application code (C# in our case). For this EF Core provides you with a good abstraction - DbContext. Implementing DbContext in inherited class lets you define objects you want to store in DB. EF Core does the rest: you work with object collections as with usual collections in C#, and EF Core performs DB operations for you, executing SELECTs, UPDATEs, INSERTs, or DELETEs where necessary. Starter project comes with class that inherits from DbContexts and defines data model for Loyalty application - it is in Data/LoyaltyContext.cs. EF Core as an abstraction layer between database and application supports various database engines like SQL Server, PostgreSql, SQLite etc. Check getting-started-guide: [EF Core with SQLite](https://docs.microsoft.com/en-us/ef/core/get-started/netcore/new-db-sqlite)
+
+You do not need to setup data model and initialize the database - it's all ready and provided in starter project. DB file loyalty.db which you see in project folder is created based on the model defined in LoyaltyContext.cs. This model is enough to work with the task. You don't need to modify files in Data folder. Simply use provided LoyaltyContext for your operations with data. And just implement rest of the necessary code: it might be just simple Transaction Script implementation straight in LoyaltyClient, or more sophisticated solution with separate classes for domain model and domain logic. It's up to you as a designer!
+
+NOTE: For running tests in this project use only dotnet test command (dotnet xunit may not work).
