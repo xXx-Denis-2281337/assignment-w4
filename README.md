@@ -1,5 +1,7 @@
 # Loyalty Automation
 
+[![Join the chat at https://gitter.im/kmaooad18/assignment-w4](https://badges.gitter.im/kmaooad18/assignment-w4.svg)](https://gitter.im/kmaooad18/assignment-w4?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Task goal is to implement simple API for managing loyalty bonus program for some store. Stubs for client methods are provided in `LoyaltyClient.cs`.
 
 **Deadline** for this task is extended for one more day &mdash; until Oct 8th instead of Oct 7th &mdash; due to publish delay :)
