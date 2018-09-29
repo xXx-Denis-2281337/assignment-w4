@@ -11,6 +11,11 @@ namespace KmaOoad18.Assignments.Week4
 {
     public class Spec : IDisposable
     {
+        public Spec()
+        {
+            LoyaltyClient.Db = "test.db";
+        }
+
         [Fact]
         public void BasicScenario()
         {

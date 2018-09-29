@@ -9,8 +9,8 @@ namespace KmaOoad18.Assignments.Week4.Data
         public DbSet<Product> Products { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {            
-            optionsBuilder.UseSqlite("Data Source=loyalty.db");
+        {
+            optionsBuilder.UseSqlite($"Data Source={LoyaltyClient.Db}");
         }
     }
 }

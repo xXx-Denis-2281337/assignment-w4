@@ -15,7 +15,7 @@ namespace assignmentw4.Migrations
                     Name = table.Column<string>(nullable: true),
                     Phone = table.Column<string>(nullable: true),
                     LoyaltyCardId = table.Column<string>(nullable: true),
-                    LoyaltyBalance = table.Column<int>(nullable: false)
+                    LoyaltyBalance = table.Column<decimal>(nullable: false)
                 },
                 constraints: table =>
                 {

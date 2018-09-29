@@ -15,7 +15,7 @@ namespace KmaOoad18.Assignments.Week4
         // Calculates bonus for purchase and adds to customer's account
         //    a. Normal loyalty bonus for product is 10% of paid total amount 
         //    b. If useLoyaltyPoints=true, up to 50% of total amount can be covered with loyalty points; //       in this case loyalty bonus is calculated only for actually paid amount
-        
+
         public void ProcessPurchase(List<(string sku, int qty)> order, string loyaltyId, bool useLoyaltyPoints = false)
         {
             // Add implementation
@@ -52,5 +52,19 @@ namespace KmaOoad18.Assignments.Week4
         // Returns new loyalty card ID
         public string LaunchLoyalty(string customerName, string customerPhone)
         => string.Empty; // Replace with implementation
+
+
+        #region Config
+        // This is to simplify config for testing purposes in this educational project only. Normaly you should avoid such public fields in real life!
+        public static string Db = "loyalty.db";
+        #endregion
     }
+
+    public enum Promotion
+    {
+        AddPoints,
+        MultiplyPoints
+    }
+
+
 }

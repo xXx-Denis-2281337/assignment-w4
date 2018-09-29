@@ -21,7 +21,7 @@ namespace assignmentw4.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("LoyaltyBalance");
+                    b.Property<decimal>("LoyaltyBalance");
 
                     b.Property<string>("LoyaltyCardId");
 

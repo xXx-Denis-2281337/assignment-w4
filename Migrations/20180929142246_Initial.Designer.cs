@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace assignmentw4.Migrations
 {
     [DbContext(typeof(LoyaltyContext))]
-    [Migration("20180928153218_Initial")]
+    [Migration("20180929142246_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,7 +23,7 @@ namespace assignmentw4.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("LoyaltyBalance");
+                    b.Property<decimal>("LoyaltyBalance");
 
                     b.Property<string>("LoyaltyCardId");
 
