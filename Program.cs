@@ -6,8 +6,7 @@ namespace KmaOoad18.Assignments.Week4
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Console.WriteLine("Halo!");
         }
     }
-
 }
